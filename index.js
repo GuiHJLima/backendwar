@@ -17,6 +17,27 @@ const pool = new Pool({
     port: 7007,
 });
 
+//função para verificar a alingment
+function checkAlignment(alignment) {
+    const alignments = ['Lawful Good', 'Neutral Good', 'Chaotic Good', 'Lawful Neutral', 'True Neutral', 'Chaotic Neutral', 'Lawful Evil', 'Neutral Evil', 'Chaotic Evil'];
+    if (alignments.includes(alignment)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//função para verificar strength, agility, constitution, level, vitality
+function checkNumber(strength, agility, constitution, level, vitality) {
+    if (isNaN(strength, agility, constitution, level, vitality)) {
+        return false;
+    } else {
+        if(strength < 0 || strength > 10 || agility < 0 || agility > 10 || constitution < 0 || constitution > 10 || level < 0 || level > 20 || vitality < 0 || vitality > 1000) {
+            return false;
+        }
+    }
+}
+
 //rota get all warriors
 app.get('/warriors', async (req, res) => {
     try {
@@ -44,6 +65,19 @@ app.get('/warriors/:id', async (req, res) => {
     } catch (error) {
         console.error("Erro ao tentar obter warrior por id", error);
         res.status(500).send({ mensagem: "Erro ao tentar obter warrior por id"});
+    }
+});
+
+//rota post warrior
+app.post('/warriors', async (req, res) => {
+    const { name, universe, alignment, abilitie, strength, agility, constitution, level, vitality } = req.body;
+    if (!name || !universe || !alignment || !abilitie || !strength || !agility || !constitution || !level || !vitality) {
+        res.status(400).send({ mensagem: "Todos os campos são obrigatórios"});
+        return;
+    }
+    if (!checkAlignment(alignment)) {
+        res.status(400).send({ mensagem: "Alignment inválido, por favor informe um dos seguintes: Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil"});
+        return;
     }
 });
 
