@@ -14,10 +14,10 @@ const pool = new Pool({
     host: 'localhost',
     database: 'limaaulabacktds2',
     password: 'ds564',
-    port: 5432,
+    port: 7007,
 });
 
-//rota get all
+//rota get all warriors
 app.get('/warriors', async (req, res) => {
     try {
         const resultado = await pool.query('SELECT * FROM warriors');
@@ -28,6 +28,22 @@ app.get('/warriors', async (req, res) => {
     } catch (error) {
         console.error("Erro ao tentar obter todos os warriors", error);
         res.status(500).send({ mensagem: "Erro ao tentar obter todos os warriors"});
+    }
+});
+
+//rota get warrior by id
+app.get('/warriors/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE id = $1', [id]);
+        if (resultado.rowCount === 0) {
+            res.status(404).send({ mensagem: "Warrior não encontrado"});
+        } else {
+            res.json(resultado.rows[0]);
+        }
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por id", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por id"});
     }
 });
 
