@@ -32,7 +32,7 @@ function checkNumber(strength, agility, constitution, level, vitality) {
     if (isNaN(strength, agility, constitution, level, vitality)) {
         return false;
     } else {
-        if(strength < 0 || strength > 10 || agility < 0 || agility > 10 || constitution < 0 || constitution > 10 || level < 0 || level > 20 || vitality < 100 || vitality > 1000) {
+        if (strength < 0 || strength > 10 || agility < 0 || agility > 10 || constitution < 0 || constitution > 10 || level < 0 || level > 20 || vitality < 100 || vitality > 1000) {
             return false;
         } else {
             return true;
@@ -42,11 +42,12 @@ function checkNumber(strength, agility, constitution, level, vitality) {
 
 //função calc batalha
 function batalha(warrior1, warrior2) {
-    const battle = {
-        warrior1: warrior1,
-        warrior2: warrior2,
-        resultado: ''
-    }
+    let battle = {
+        warrior1_id: warrior1.id,
+        warrior2_id: warrior2.id,
+        winner_id: null,
+        winner: null,
+    };
     let warrior1Vitality = warrior1.vitality + (warrior1.constitution * 10) + (warrior1.level * 10);
     let warrior2Vitality = warrior2.vitality + (warrior2.constitution * 10) + (warrior2.level * 10);
 
@@ -60,24 +61,14 @@ function batalha(warrior1, warrior2) {
         if (warrior1Initiative > warrior2Initiative) {
             warrior2Vitality -= warrior1Attack;
             if (warrior2Vitality <= 0) {
-                battle.resultado = `${warrior1.name} venceu a batalha!`;
-                break;
-            }
-            warrior1Vitality -= warrior2Attack;
-            if (warrior1Vitality <= 0) {
-                battle.resultado = `${warrior2.name} venceu a batalha!`;
-                break;
-            }
-        } else {
-            warrior1Vitality -= warrior2Attack;
-            if (warrior1Vitality <= 0) {
-                battle.resultado = `${warrior2.name} venceu a batalha!`;
-                break;
-            }
-            warrior2Vitality -= warrior1Attack;
-            if (warrior2Vitality <= 0) {
-                battle.resultado = `${warrior1.name} venceu a batalha!`;
-                break;
+                battle.winner_id = warrior1.id;
+                battle.winner = warrior1.name;
+            } else {
+                warrior1Vitality -= warrior2Attack;
+                if (warrior1Vitality <= 0) {
+                    battle.winner_id = warrior2.id;
+                    battle.winner = warrior2.name;
+                }
             }
         }
     } while (warrior1Vitality > 0 || warrior2Vitality > 0);
@@ -94,7 +85,7 @@ app.get('/warriors', async (req, res) => {
         });
     } catch (error) {
         console.error("Erro ao tentar obter todos os warriors", error);
-        res.status(500).send({ mensagem: "Erro ao tentar obter todos os warriors"});
+        res.status(500).send({ mensagem: "Erro ao tentar obter todos os warriors" });
     }
 });
 
@@ -104,13 +95,13 @@ app.get('/warriors/:id', async (req, res) => {
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE id = $1', [id]);
         if (resultado.rowCount === 0) {
-            res.status(404).send({ mensagem: "Warrior não encontrado"});
+            res.status(404).send({ mensagem: "Warrior não encontrado" });
         } else {
             res.json(resultado.rows[0]);
         }
     } catch (error) {
         console.error("Erro ao tentar obter warrior por id", error);
-        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por id"});
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por id" });
     }
 });
 
@@ -119,25 +110,25 @@ app.post('/warriors', async (req, res) => {
     const { name, universe, alignment, abilitie, strength, agility, constitution, level, vitality } = req.body;
     if (!name || !universe || !alignment || !abilitie || !strength || !agility || !constitution || !level || !vitality) {
         console.log("Todos os campos são obrigatórios");
-        res.status(400).send({ mensagem: "Todos os campos são obrigatórios"});
+        res.status(400).send({ mensagem: "Todos os campos são obrigatórios" });
         return;
     }
     if (!checkAlignment(alignment)) {
         console.log("Alignment inválido, por favor informe um dos seguintes: Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil");
-        res.status(400).send({ mensagem: "Alignment inválido, por favor informe um dos seguintes: Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil"});
+        res.status(400).send({ mensagem: "Alignment inválido, por favor informe um dos seguintes: Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil" });
         return;
     }
     if (!checkNumber(strength, agility, constitution, level, vitality)) {
         console.log("Strength, Agility, Constitution, Level e Vitality devem ser números entre 0 e 10, Level entre 0 e 20 e Vitality entre 100 e 1000");
-        res.status(400).send({ mensagem: "Strength, Agility, Constitution, Level e Vitality devem ser números entre 0 e 10, Level entre 0 e 20 e Vitality entre 100 e 1000"});
+        res.status(400).send({ mensagem: "Strength, Agility, Constitution, Level e Vitality devem ser números entre 0 e 10, Level entre 0 e 20 e Vitality entre 100 e 1000" });
         return;
     }
     try {
         await pool.query('INSERT INTO warriors (name, universe, alignment, abilitie, strength, agility, constitution, level, vitality) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [name, universe, alignment, abilitie, strength, agility, constitution, level, vitality]);
-        res.status(201).send({ mensagem: "Warrior criado com sucesso"});
+        res.status(201).send({ mensagem: "Warrior criado com sucesso" });
     } catch (error) {
         console.error("Erro ao tentar criar warrior", error);
-        res.status(500).send({ mensagem: "Erro ao tentar criar warrior"});
+        res.status(500).send({ mensagem: "Erro ao tentar criar warrior" });
     }
 });
 
@@ -152,12 +143,27 @@ app.get('/battle', async (req, res) => {
         });
     } catch (error) {
         console.error("Erro ao tentar obter todas as batalhas", error);
-        res.status(500).send({ mensagem: "Erro ao tentar obter todas as batalhas"});
+        res.status(500).send({ mensagem: "Erro ao tentar obter todas as batalhas" });
     }
 });
 
 //rota create battle
 app.get('/battle/:id1/:id2', async (req, res) => {
+    const { id1, id2 } = req.params;
+    try {
+        const warrior1 = await pool.query('SELECT * FROM warriors WHERE id = $1', [id1]);
+        const warrior2 = await pool.query('SELECT * FROM warriors WHERE id = $1', [id2]);
+        if (warrior1.rowCount === 0 || warrior2.rowCount === 0) {
+            res.status(404).send({ mensagem: "Warrior não encontrado" });
+        } else {
+            const battle = batalha(warrior1.rows[0], warrior2.rows[0]);
+            await pool.query('INSERT INTO battle (warrior1_id, warrior2_id, winner_id, winner) VALUES ($1, $2, $3, $4)', [battle.warrior1_id, battle.warrior2_id, battle.winner_id, battle.winner]);
+            res.json(battle);
+        }
+    } catch (error) {
+        console.error("Erro ao tentar criar batalha", error);
+        res.status(500).send({ mensagem: "Erro ao tentar criar batalha" });
+    }
 });
 
 //inicializar o servidor

@@ -24,6 +24,7 @@ CREATE TABLE battle (
     warrior1_id INT NOT NULL,
     warrior2_id INT NOT NULL,
     winner_id INT NOT NULL,
+    winner VARCHAR(255) NOT NULL,
     FOREIGN KEY (warrior1_id) REFERENCES warriors(id),
     FOREIGN KEY (warrior2_id) REFERENCES warriors(id),
     FOREIGN KEY (winner_id) REFERENCES warriors(id)
