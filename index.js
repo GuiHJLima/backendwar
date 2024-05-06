@@ -32,8 +32,10 @@ function checkNumber(strength, agility, constitution, level, vitality) {
     if (isNaN(strength, agility, constitution, level, vitality)) {
         return false;
     } else {
-        if(strength < 0 || strength > 10 || agility < 0 || agility > 10 || constitution < 0 || constitution > 10 || level < 0 || level > 20 || vitality < 0 || vitality > 1000) {
+        if(strength < 0 || strength > 10 || agility < 0 || agility > 10 || constitution < 0 || constitution > 10 || level < 0 || level > 20 || vitality < 100 || vitality > 1000) {
             return false;
+        } else {
+            return true;
         }
     }
 }
@@ -78,6 +80,17 @@ app.post('/warriors', async (req, res) => {
     if (!checkAlignment(alignment)) {
         res.status(400).send({ mensagem: "Alignment inválido, por favor informe um dos seguintes: Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil"});
         return;
+    }
+    if (!checkNumber(strength, agility, constitution, level, vitality)) {
+        res.status(400).send({ mensagem: "Strength, Agility, Constitution, Level e Vitality devem ser números entre 0 e 10, Level entre 0 e 20 e Vitality entre 100 e 1000"});
+        return;
+    }
+    try {
+        const resultado = await pool.query('INSERT INTO warriors (name, universe, alignment, abilitie, strength, agility, constitution, level, vitality) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [name, universe, alignment, abilitie, strength, agility, constitution, level, vitality]);
+        res.status(201).send({ mensagem: "Warrior criado com sucesso"});
+    } catch (error) {
+        console.error("Erro ao tentar criar warrior", error);
+        res.status(500).send({ mensagem: "Erro ao tentar criar warrior"});
     }
 });
 
