@@ -77,4 +77,4 @@ INSERT INTO warriors (name, universe, alignment, abilitie, strength, agility, co
 ('Blackbeard', 'One Piece', 'Chaotic Evil', 'Gura Gura no Mi', 9, 9, 9, 18, 100),
 ('Akainu', 'One Piece', 'Lawful Evil', 'Magu Magu no Mi', 10, 7, 10, 19, 100),
 ('Kizaru', 'One Piece', 'Lawful Neutral', 'Pika Pika no Mi', 10, 10, 7, 19, 100),
-('Aokiji', 'One Piece', 'Lawful Neutral', 'Hie Hie no Mi',7, 10, 10, 19, 100)
+('Aokiji', 'One Piece', 'Lawful Neutral', 'Hie Hie no Mi',7, 10, 10, 19, 100);
