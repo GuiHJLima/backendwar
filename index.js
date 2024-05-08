@@ -143,6 +143,82 @@ app.get('/warriors/alignment/:alignment', async (req, res) => {
     }
 });
 
+//rota get warrior by strength
+app.get('/warriors/strength/:strength', async (req, res) => {
+    const { strength } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE strength = $1', [strength]);
+        res.json({
+            total: resultado.rowCount,
+            warriors: resultado.rows
+        });
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por força", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por força" });
+    }
+});
+
+//rota get warrior by agility
+app.get('/warriors/agility/:agility', async (req, res) => {
+    const { agility } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE agility = $1', [agility]);
+        res.json({
+            total: resultado.rowCount,
+            warriors: resultado.rows
+        });
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por agilidade", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por agilidade" });
+    }
+});
+
+//rota get warrior by constitution
+app.get('/warriors/constitution/:constitution', async (req, res) => {
+    const { constitution } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE constitution = $1', [constitution]);
+        res.json({
+            total: resultado.rowCount,
+            warriors: resultado.rows
+        });
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por constituição", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por constituição" });
+    }
+});
+
+//rota get warrior by level
+app.get('/warriors/level/:level', async (req, res) => {
+    const { level } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE level = $1', [level]);
+        res.json({
+            total: resultado.rowCount,
+            warriors: resultado.rows
+        });
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por level", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por level" });
+    }
+});
+
+//rota get warrior by vitality
+app.get('/warriors/vitality/:vitality', async (req, res) => {
+    const { vitality } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE vitality = $1', [vitality]);
+        res.json({
+            total: resultado.rowCount,
+            warriors: resultado.rows
+        });
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por vitalidade", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por vitalidade" });
+    }
+});
+
+
 //rota post warrior
 app.post('/warriors', async (req, res) => {
     const { name, universe, alignment, abilitie, strength, agility, constitution, level, vitality } = req.body;
