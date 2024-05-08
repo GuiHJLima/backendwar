@@ -42,37 +42,88 @@ async function checkNumber(strength, agility, constitution, level, vitality) {
 
 //função calc batalha
 async function batalha(warrior1, warrior2) {
-    let battle = {
-        warrior1_id: warrior1.id,
-        warrior2_id: warrior2.id,
+    const warrior1_id = warrior1;
+    const warrior2_id = warrior2;
+
+    console.log(warrior1_id);
+    console.log(warrior2_id);
+
+    const battle = {
+        warrior1_id: warrior1_id,
+        warrior2_id: warrior2_id,
         winner_id: null,
-        winner: null,
+        winner: null
     };
-    let warrior1Vitality = warrior1.vitality + (warrior1.constitution * 10) + (warrior1.level * 10);
-    let warrior2Vitality = warrior2.vitality + (warrior2.constitution * 10) + (warrior2.level * 10);
 
-    let warrior1Initiative = Math.floor(Math.random() * 20) + warrior1.agility + (warrior1.level / 2);
-    let warrior2Initiative = Math.floor(Math.random() * 20) + warrior2.agility + (warrior2.level / 2);
+    const warrior1_data = await pool.query('SELECT * FROM warriors WHERE id = $1', [warrior1_id]);
+    const warrior2_data = await pool.query('SELECT * FROM warriors WHERE id = $1', [warrior2_id]);
+    
+    var warrior1_life = warrior1_data.rows[0].vitality + (warrior1_data.rows[0].constitution * 10) + (warrior1_data.rows[0].level * 10);
+    console.log(warrior1_life);
+    var warrior2_life = warrior2_data.rows[0].vitality + (warrior2_data.rows[0].constitution * 10) + (warrior2_data.rows[0].level * 10);
+    console.log(warrior2_life);
 
-    let warrior1Attack = Math.floor(Math.random(warrior1.strength) * 20) + (warrior1.level / 2);
-    let warrior2Attack = Math.floor(Math.random(warrior2.strength) * 20) + (warrior2.level / 2);
+    let warrior1_initiative = Math.floor(Math.random() * 20)+ warrior1_data.rows[0].agility + Math.floor(warrior1_data.rows[0].level / 2);
+    console.log(warrior1_initiative);
+    let warrior2_initiative = Math.floor(Math.random() * 20)+ warrior2_data.rows[0].agility + Math.floor(warrior2_data.rows[0].level / 2);
+    console.log(warrior2_initiative);
 
-    do {
-        if (warrior1Initiative > warrior2Initiative) {
-            warrior2Vitality -= warrior1Attack;
-            if (warrior2Vitality <= 0) {
-                battle.winner_id = warrior1.id;
-                battle.winner = warrior1.name;
-            } else {
-                warrior1Vitality -= warrior2Attack;
-                if (warrior1Vitality <= 0) {
-                    battle.winner_id = warrior2.id;
-                    battle.winner = warrior2.name;
-                }
+    var warrior1_attack = Math.floor(Math.random(warrior1_data.rows[0].strength) * 10) + (warrior1_data.rows[0].level * 10);
+    console.log(warrior1_attack);
+    var warrior2_attack = Math.floor(Math.random(warrior2_data.rows[0].strength) * 10) + (warrior2_data.rows[0].level * 10);
+    console.log(warrior2_attack);
+
+    let round = 1;
+    while (warrior1_life > 0 && warrior2_life > 0) {
+        console.log(`Round ${round}`);
+        console.log(`Warrior 1 Life: ${warrior1_life}`);
+        console.log(`Warrior 2 Life: ${warrior2_life}`);
+
+        if (warrior1_initiative > warrior2_initiative) {
+            warrior2_life -= warrior1_attack;
+            console.log(`Warrior 1 ataca Warrior 2 com ${warrior1_attack} de dano usando ${warrior1_data.rows[0].abilitie}`);
+            console.log(`Warrior 2 Life: ${warrior2_life}`);
+            if (warrior2_life <= 0) {
+                battle.winner_id = warrior1_id;
+                battle.winner = warrior1_data.rows[0].name;
+                console.log(`Warrior 1 venceu a batalha`);
+                break;
+            }
+            warrior1_life -= warrior2_attack;
+            console.log(`Warrior 2 ataca Warrior 1 com ${warrior2_attack} de dano usando ${warrior2_data.rows[0].abilitie}`);
+            console.log(`Warrior 1 Life: ${warrior1_life}`);
+            if (warrior1_life <= 0) {
+                battle.winner_id = warrior2_id;
+                battle.winner = warrior2_data.rows[0].name;
+                console.log(`Warrior 2 venceu a batalha`);
+                break;
             }
         }
-    } while (warrior1Vitality > 0 || warrior2Vitality > 0);
-    return battle;
+        else {
+            warrior1_life -= warrior2_attack;
+            console.log(`Warrior 2 ataca Warrior 1 com ${warrior2_attack} de dano usando ${warrior2_data.rows[0].abilitie}`);
+            console.log(`Warrior 1 Life: ${warrior1_life}`);
+            if (warrior1_life <= 0) {
+                battle.winner_id = warrior2_id;
+                battle.winner = warrior2_data.rows[0].name;
+                console.log(`Warrior 2 venceu a batalha`);
+                break;
+            }
+            warrior2_life -= warrior1_attack;
+            console.log(`Warrior 1 ataca Warrior 2 com ${warrior1_attack} de dano usando ${warrior1_data.rows[0].abilitie}`);
+            console.log(`Warrior 2 Life: ${warrior2_life}`);
+            if (warrior2_life <= 0) {
+                battle.winner_id = warrior1_id;
+                battle.winner = warrior1_data.rows[0].name;
+                console.log(`Warrior 1 venceu a batalha`);
+                break;
+            }
+        }
+        round++;
+    }     
+
+    console.log(battle);
+    return battle;       
 }
 
 //rota get all warriors
@@ -341,12 +392,9 @@ app.get('/battle/warriors', async (req, res) => {
 //rota create battle
 app.get('/battle/:id1/:id2', async (req, res) => {
     const { id1, id2 } = req.params;
-    
     try{
         const vencedor = await batalha(id1, id2);
-
         await pool.query('INSERT INTO battle (warrior1_id, warrior2_id, winner_id, winner) VALUES ($1, $2, $3, $4)', [vencedor.warrior1_id, vencedor.warrior2_id, vencedor.winner_id, vencedor.winner]);
-
         const resultado = await pool.query('SELECT * FROM battle WHERE id = $1', [vencedor.winner_id]);
         res.json({vencedor: resultado.rows[0], mensagem: "Batalha criada com sucesso"});
     } catch (error) {
