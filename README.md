@@ -1,14 +1,14 @@
-# Mundo de Harry Potter 🧙🏼🪄
+# Anime War (RPG)⚔🪄
 
-Bem-vindo ao Mundo de Harry Potter - Backend! Este projeto é parte de um desafio de desenvolvimento backend inspirado no mundo mágico criado por J.K. Rowling. Aqui, você encontrará um backend simples desenvolvido em Node.js com Express e PostgreSQL, permitindo operações CRUD completas para bruxos e varinhas.
+O Projeto Anime War é uma aplicação de backend desenvolvida para oferecer funcionalidades de CRUD (Create, Read, Update, Delete) relacionadas a personagens de anime. Ele permite a criação, atualização, exclusão e recuperação de informações sobre esses personagens, bem como funcionalidades adicionais, como batalhas entre os personagens e registro de histórico de batalhas.
 
-![alt text](images/image-1.png)
+![anime_war](https://github.com/GuiLimaSeila/backendwar/assets/123502074/3be8c1ab-d715-4156-9a96-f542e9ca06e2)
 
 ## Funcionalidades🪄
 
-- Criação, leitura, atualização e exclusão (CRUD) de bruxos.
-- Criação, leitura, atualização e exclusão (CRUD) de varinhas.
-- Rota de teste que retorna uma frase aleatória do filme Harry Potter ou um feitiço.
+- Criação, leitura, atualização e exclusão (CRUD) de personagens.
+- Realização de batalhas entre personagens.
+- Registro e consulta de histórico de batalhas.
 
 ## Tecnologias Utilizadas🪄
 
@@ -18,54 +18,139 @@ Bem-vindo ao Mundo de Harry Potter - Backend! Este projeto é parte de um desafi
 
 ## Como Usar🪄
 
-1. Clone este repositório:
+1. Clone o repositório para o seu ambiente local.
+2. Instale as dependências do projeto usando `npm install`.
+3. Configure o banco de dados PostgreSQL com o nome `animewar_db` e execute o script `script.sql` para criar as tabelas necessárias.
+4. Abra o arquivo `index.js` e ajuste as configurações do banco de dados conforme necessário (usuário, senha, host, porta).
+5. Inicie o servidor executando `npm run dev`.
+6. Acesse as diferentes rotas disponíveis conforme a documentação fornecida.
 
-```
-git clone https://github.com/seu_usuario/harry-potter-backend.git
-```
+## Documentação e teste de rotas
+**Testando as Rotas no Insomnia:**
 
-2. Instale as dependências:
+Para testar cada rota individualmente, siga estas instruções:
 
-```
-cd harry-potter-backend
-npm install
-```
+1. Rota para obter todos os personagens
 
-3. Configure o banco de dados PostgreSQL:
+- Método: GET
+- URL: `http://localhost:4000/warriors/`
 
-   - Certifique-se de ter o PostgreSQL instalado em sua máquina.
-   - Crie um banco de dados chamado `harrypotter`.
-   - Execute o script fornecido em `database.sql` para criar as tabelas `bruxos` e `varinhas`.
+2. Rota para adicionar um novo personagen
 
-4. Configure as credenciais do banco de dados:
+- Método: POST
+- URL: `http://localhost:4000/warriors/`
+- Corpo da Requisição (JSON):
+  {
+	   "name": "Nome do Personagen",
+	   "universe": "Universo do Personagen",
+	   "alignment": "Alinhamento do Personagen",
+	   "abilitie": "Habilidade do Personagen",
+	   "strength": Força do Personagen(INT),
+	   "agility": Agilidade do Personagen(INT),
+	   "constitution": Constituição do Personagen(INT),
+	   "level": Level do Personagen(INT),
+	   "vitality": VItalidade do Personagen(INT)
+  }
 
-   - No arquivo `index.js`, altere as informações de conexão do pool do PostgreSQL para corresponder às suas credenciais.
+3. Rota para atualizar um personagen
 
-5. Inicie o servidor:
+- Método: PUT
+- URL: `http://localhost:4000/warriors/{id}`
+  - Substitua `{id}` pelo ID do personagen que deseja atualizar.
+- Corpo da Requisição (JSON):
+   {
+	   "name": "Nome do Personagen",
+	   "universe": "Universo do Personagen",
+	   "alignment": "Alinhamento do Personagen",
+	   "abilitie": "Habilidade do Personagen",
+	   "strength": Força do Personagen(INT),
+	   "agility": Agilidade do Personagen(INT),
+	   "constitution": Constituição do Personagen(INT),
+	   "level": Level do Personagen(INT),
+	   "vitality": VItalidade do Personagen(INT)
+  }
 
-```
-npm start
-```
+4. Rota para deletar um personagen
 
-6. Acesse a API em `http://localhost:3003`.
+- Método: DELETE
+- URL: `http://localhost:4000/warriors/{id}`
+  - Substitua `{id}` pelo ID do personagen que deseja deletar.
 
-## Rotas 🪄
+5. Rota para obter um personagen específico
 
-- `GET /bruxos`: Retorna todos os bruxos.
-- `POST /bruxos`: Cria um novo bruxo.
-- `PUT /bruxos/:id`: Atualiza um bruxo existente.
-- `DELETE /bruxos/:id`: Deleta um bruxo existente.
-- `GET /varinhas`: Retorna todas as varinhas.
-- `POST /varinhas`: Cria uma nova varinha.
-- `PUT /varinhas/:id`: Atualiza uma varinha existente.
-- `DELETE /varinhas/:id`: Deleta uma varinha existente.
-- `GET /`: Retorna uma frase aleatória do filme Harry Potter ou um feitiço.
+- Método: GET
+- URL: `http://localhost:4000/warriors/{id}`
+  - Substitua `{id}` pelo ID do personagen que deseja recuperar.
+
+6. Rota para obter todos os personagens de um determinado nome
+
+- Método: GET
+- URL: `http://localhost:4000/warriors/name/{name}`
+  - Substitua `{name}` pelo nome desejado.
+ 
+7. Rota para obter todos os personagens de um determinado nome 
+
+- Método: GET
+- URL: `http://localhost:4000/warriors/universe/{universe}`
+  - Substitua `{universe}` pelo univereso desejado.
+
+8. Rota para obter todos os personagens de um determinado alinhamento 
+
+- Método: GET
+- URL: `http://localhost:4000/warriors/alignment/{alignment}`
+  - Substitua `{alignment}` pelo alinhamento desejado.
+ 
+9. Rota para obter todos os personagens de um determinada força
+
+- Método: GET
+- URL: `http://localhost:4000/warriors/strength/{strength}`
+  - Substitua `{strength}` pela força desejada.
+ 
+10. Rota para obter todos os personagens de um determinada agilidade
+
+- Método: GET
+- URL: `http://localhost:4000/warriors/agility/{agility}`
+  - Substitua `{agility}` pela agilidade desejada.
+ 
+11. Rota para obter todos os personagens de um determinada constituição
+
+- Método: GET
+- URL: `http://localhost:4000/warriors/constitution/{constitution}`
+  - Substitua `{constitution}` pela constitution desejada.
+ 
+12. Rota para obter todos os personagens de um determinado level
+
+- Método: GET
+- URL: `http://localhost:4000/warriors/level/{level}`
+  - Substitua `{level}` pelo level desejada.
+ 
+13. Rota para obter todos os personagens de um determinada vitality
+
+- Método: GET
+- URL: `http://localhost:4000/warriors/vitality/{vitality}`
+  - Substitua `{vitality}` pela força desejada.
+
+14. Rota para realizar uma batalha entre dois personagens
+
+- Método: GET
+- URL: `http://localhost:6000/battles/{hero1_id}/{hero2_id}`
+  - Substitua `{hero1_id}` e `{hero2_id}` pelos IDs dos heróis que deseja colocar para batalhar.
+
+9. Rota para obter o histórico de batalhas
+
+- Método: GET
+- URL: `http://localhost:6000/battles`
+
+10. Rota para obter o histórico de batalhas com os dados dos heróis
+
+- Método: GET
+- URL: `http://localhost:6000/battles/heroes`
+
+
+**Aviso Importante:**
+
+Este projeto destina-se exclusivamente a fins educacionais. Os dados de acesso ao banco de dados estão expostos neste projeto, pois é destinado a fins educacionais como projeto de estudo para alunos. Certifique-se de não utilizar informações sensíveis neste contexto.
 
 ## Contribuindo
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests para melhorar este projeto.
-
-### Aviso Importante
-
-Os dados de acesso ao banco de dados estão expostos neste projeto, pois é destinado a fins educacionais como projeto de estudo para alunos. Certifique-se de não utilizar informações sensíveis neste contexto.
-
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues para relatar bugs, propor melhorias ou enviar pull requests.
