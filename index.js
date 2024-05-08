@@ -94,11 +94,7 @@ app.get('/warriors/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE id = $1', [id]);
-        if (resultado.rowCount === 0) {
-            res.status(404).send({ mensagem: "Warrior não encontrado" });
-        } else {
-            res.json(resultado.rows[0]);
-        }
+        res.json(resultado.rows[0]);
     } catch (error) {
         console.error("Erro ao tentar obter warrior por id", error);
         res.status(500).send({ mensagem: "Erro ao tentar obter warrior por id" });
@@ -110,11 +106,7 @@ app.get('/warriors/name/:name', async (req, res) => {
     const { name } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE name = $1', [name]);
-        if (resultado.rowCount === 0) {
-            res.status(404).send({ mensagem: "Warrior não encontrado" });
-        } else {
-            res.json(resultado.rows[0]);
-        }
+        res.json(resultado.rows[0]);
     } catch (error) {
         console.error("Erro ao tentar obter warrior por nome", error);
         res.status(500).send({ mensagem: "Erro ao tentar obter warrior por nome" });
@@ -126,17 +118,28 @@ app.get('/warriors/universe/:universe', async (req, res) => {
     const { universe } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE universe = $1', [universe]);
-        if (resultado.rowCount === 0) {
-            res.status(404).send({ mensagem: "Warrior não encontrado" });
-        } else {
-            res.json({
-                total: resultado.rowCount,
-                warriors: resultado.rows
-            });
-        }
+        res.json({
+            total: resultado.rowCount,
+            warriors: resultado.rows
+        });
     } catch (error) {
         console.error("Erro ao tentar obter warrior por universo", error);
         res.status(500).send({ mensagem: "Erro ao tentar obter warrior por universo" });
+    }
+});
+
+//rota get warrior by alignment
+app.get('/warriors/alignment/:alignment', async (req, res) => {
+    const { alignment } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE alignment = $1', [alignment]);
+        res.json({
+            total: resultado.rowCount,
+            warriors: resultado.rows
+        });
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por alinhamento", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por alinhamento" });
     }
 });
 
