@@ -132,6 +132,23 @@ app.post('/warriors', async (req, res) => {
     }
 });
 
+//rota delete warrior
+app.delete('/warriors/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE id = $1', [id]);
+        if (resultado.rowCount === 0) {
+            res.status(404).send({ mensagem: "Warrior não encontrado" });
+        } else {
+            await pool.query('DELETE FROM warriors WHERE id = $1', [id]);
+            res.send({ mensagem: "Warrior deletado com sucesso" });
+        }
+    } catch (error) {
+        console.error("Erro ao tentar deletar warrior", error);
+        res.status(500).send({ mensagem: "Erro ao tentar deletar warrior" });
+    }
+});
+
 
 //rota get battle
 app.get('/battle', async (req, res) => {
