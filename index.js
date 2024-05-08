@@ -395,8 +395,8 @@ app.get('/battle/:id1/:id2', async (req, res) => {
     try{
         const vencedor = await batalha(id1, id2);
         await pool.query('INSERT INTO battle (warrior1_id, warrior2_id, winner_id, winner) VALUES ($1, $2, $3, $4)', [vencedor.warrior1_id, vencedor.warrior2_id, vencedor.winner_id, vencedor.winner]);
-        const resultado = await pool.query('SELECT * FROM battle WHERE id = $1', [vencedor.winner_id]);
-        res.json({vencedor: resultado.rows[0], mensagem: "Batalha criada com sucesso"});
+        const resultado = await pool.query('SELECT * FROM battle WHERE winner_id = $1', [vencedor.winner_id]);
+        res.json({mensagem: "Batalha criada com sucesso", resultado: resultado.rows[0]});
     } catch (error) {
         console.error("Erro ao tentar criar batalha", error);
         res.status(500).send({ mensagem: "Erro ao tentar criar batalha" });
