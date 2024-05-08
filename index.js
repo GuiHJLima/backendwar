@@ -18,7 +18,7 @@ const pool = new Pool({
 });
 
 //função para verificar a alingment
-function checkAlignment(alignment) {
+async function checkAlignment(alignment) {
     const alignments = ['Lawful Good', 'Neutral Good', 'Chaotic Good', 'Lawful Neutral', 'True Neutral', 'Chaotic Neutral', 'Lawful Evil', 'Neutral Evil', 'Chaotic Evil'];
     if (alignments.includes(alignment)) {
         return true;
@@ -28,7 +28,7 @@ function checkAlignment(alignment) {
 }
 
 //função para verificar strength, agility, constitution, level, vitality
-function checkNumber(strength, agility, constitution, level, vitality) {
+async function checkNumber(strength, agility, constitution, level, vitality) {
     if (isNaN(strength, agility, constitution, level, vitality)) {
         return false;
     } else {
@@ -41,7 +41,7 @@ function checkNumber(strength, agility, constitution, level, vitality) {
 }
 
 //função calc batalha
-function batalha(warrior1, warrior2) {
+async function batalha(warrior1, warrior2) {
     let battle = {
         warrior1_id: warrior1.id,
         warrior2_id: warrior2.id,
@@ -218,7 +218,6 @@ app.get('/warriors/vitality/:vitality', async (req, res) => {
     }
 });
 
-
 //rota post warrior
 app.post('/warriors', async (req, res) => {
     const { name, universe, alignment, abilitie, strength, agility, constitution, level, vitality } = req.body;
@@ -314,16 +313,14 @@ app.get('/battle', async (req, res) => {
 //rota create battle
 app.get('/battle/:id1/:id2', async (req, res) => {
     const { id1, id2 } = req.params;
-    try {
-        const warrior1 = await pool.query('SELECT * FROM warriors WHERE id = $1', [id1]);
-        const warrior2 = await pool.query('SELECT * FROM warriors WHERE id = $1', [id2]);
-        if (warrior1.rowCount === 0 || warrior2.rowCount === 0) {
-            res.status(404).send({ mensagem: "Warrior não encontrado" });
-        } else {
-            const battle = batalha(warrior1.rows[0], warrior2.rows[0]);
-            await pool.query('INSERT INTO battle (warrior1_id, warrior2_id, winner_id, winner) VALUES ($1, $2, $3, $4)', [battle.warrior1_id, battle.warrior2_id, battle.winner_id, battle.winner]);
-            res.json(battle);
-        }
+    
+    try{
+        const vencedor = await batalha(id1, id2);
+
+        await pool.query('INSERT INTO battle (warrior1_id, warrior2_id, winner_id, winner) VALUES ($1, $2, $3, $4)', [vencedor.warrior1_id, vencedor.warrior2_id, vencedor.winner_id, vencedor.winner]);
+
+        const resultado = await pool.query('SELECT * FROM battle WHERE id = $1', [vencedor.winner_id]);
+        res.json({vencedor: resultado.rows[0], mensagem: "Batalha criada com sucesso"});
     } catch (error) {
         console.error("Erro ao tentar criar batalha", error);
         res.status(500).send({ mensagem: "Erro ao tentar criar batalha" });
