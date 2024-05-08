@@ -133,23 +133,18 @@ Para testar cada rota individualmente, siga estas instruções:
 14. Rota para realizar uma batalha entre dois personagens
 
 - Método: GET
-- URL: `http://localhost:6000/battles/{hero1_id}/{hero2_id}`
-  - Substitua `{hero1_id}` e `{hero2_id}` pelos IDs dos heróis que deseja colocar para batalhar.
+- URL: `http://localhost:4000/battle/{id1}/{id2}`
+  - Substitua `{id1}` e `{id2}` pelos IDs dos personagens que deseja colocar para batalhar.
 
-9. Rota para obter o histórico de batalhas
-
-- Método: GET
-- URL: `http://localhost:6000/battles`
-
-10. Rota para obter o histórico de batalhas com os dados dos heróis
+15. Rota para obter o histórico de batalhas
 
 - Método: GET
-- URL: `http://localhost:6000/battles/heroes`
+- URL: `http://localhost:4000/battle`
 
+16. Rota para obter o histórico de batalhas com os dados dos personagens
 
-**Aviso Importante:**
-
-Este projeto destina-se exclusivamente a fins educacionais. Os dados de acesso ao banco de dados estão expostos neste projeto, pois é destinado a fins educacionais como projeto de estudo para alunos. Certifique-se de não utilizar informações sensíveis neste contexto.
+- Método: GET
+- URL: `http://localhost:4000/battle/warrios`
 
 ## Contribuindo
 
