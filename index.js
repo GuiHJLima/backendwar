@@ -105,6 +105,41 @@ app.get('/warriors/:id', async (req, res) => {
     }
 });
 
+//rotas get warrior by name
+app.get('/warriors/name/:name', async (req, res) => {
+    const { name } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE name = $1', [name]);
+        if (resultado.rowCount === 0) {
+            res.status(404).send({ mensagem: "Warrior não encontrado" });
+        } else {
+            res.json(resultado.rows[0]);
+        }
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por nome", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por nome" });
+    }
+});
+
+//rota get warrior by universe
+app.get('/warriors/universe/:universe', async (req, res) => {
+    const { universe } = req.params;
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE universe = $1', [universe]);
+        if (resultado.rowCount === 0) {
+            res.status(404).send({ mensagem: "Warrior não encontrado" });
+        } else {
+            res.json({
+                total: resultado.rowCount,
+                warriors: resultado.rows
+            });
+        }
+    } catch (error) {
+        console.error("Erro ao tentar obter warrior por universo", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter warrior por universo" });
+    }
+});
+
 //rota post warrior
 app.post('/warriors', async (req, res) => {
     const { name, universe, alignment, abilitie, strength, agility, constitution, level, vitality } = req.body;
