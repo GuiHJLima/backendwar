@@ -106,7 +106,10 @@ app.get('/warriors/name/:name', async (req, res) => {
     const { name } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE name = $1', [name]);
-        res.json(resultado.rows[0]);
+        res.json({
+            total: resultado.rowCount,
+            warriors: resultado.rows
+        });
     } catch (error) {
         console.error("Erro ao tentar obter warrior por nome", error);
         res.status(500).send({ mensagem: "Erro ao tentar obter warrior por nome" });
@@ -309,6 +312,31 @@ app.get('/battle', async (req, res) => {
         res.status(500).send({ mensagem: "Erro ao tentar obter todas as batalhas" });
     }
 });
+
+//rota get battle com os dados dos warriors
+app.get('/battle/warriors', async (req, res) => {
+    try {
+        const resultado = await pool.query('SELECT * FROM battle');
+        const warriors = [];
+        for (let i = 0; i < resultado.rowCount; i++) {
+            const warrior1 = await pool.query('SELECT * FROM warriors WHERE id = $1', [resultado.rows[i].warrior1_id]);
+            const warrior2 = await pool.query('SELECT * FROM warriors WHERE id = $1', [resultado.rows[i].warrior2_id]);
+            warriors.push({
+                warrior1: warrior1.rows[0],
+                warrior2: warrior2.rows[0],
+                winner: resultado.rows[i].winner
+            });
+        }
+        res.json({
+            total: resultado.rowCount,
+            warriors: warriors
+        });
+    } catch (error) {
+        console.error("Erro ao tentar obter todas as batalhas", error);
+        res.status(500).send({ mensagem: "Erro ao tentar obter todas as batalhas" });
+    }
+});
+
 
 //rota create battle
 app.get('/battle/:id1/:id2', async (req, res) => {
