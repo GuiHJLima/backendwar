@@ -149,6 +149,39 @@ app.delete('/warriors/:id', async (req, res) => {
     }
 });
 
+//rota put warrior
+app.put('/warriors/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, universe, alignment, abilitie, strength, agility, constitution, level, vitality } = req.body;
+    if (!name || !universe || !alignment || !abilitie || !strength || !agility || !constitution || !level || !vitality) {
+        console.log("Todos os campos são obrigatórios");
+        res.status(400).send({ mensagem: "Todos os campos são obrigatórios" });
+        return;
+    }
+    if (!checkAlignment(alignment)) {
+        console.log("Alignment inválido, por favor informe um dos seguintes: Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil");
+        res.status(400).send({ mensagem: "Alignment inválido, por favor informe um dos seguintes: Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil" });
+        return;
+    }
+    if (!checkNumber(strength, agility, constitution, level, vitality)) {
+        console.log("Strength, Agility, Constitution, Level e Vitality devem ser números entre 0 e 10, Level entre 0 e 20 e Vitality entre 100 e 1000");
+        res.status(400).send({ mensagem: "Strength, Agility, Constitution, Level e Vitality devem ser números entre 0 e 10, Level entre 0 e 20 e Vitality entre 100 e 1000" });
+        return;
+    }
+    try {
+        const resultado = await pool.query('SELECT * FROM warriors WHERE id = $1', [id]);
+        if (resultado.rowCount === 0) {
+            res.status(404).send({ mensagem: "Warrior não encontrado" });
+        } else {
+            await pool.query('UPDATE warriors SET name = $1, universe = $2, alignment = $3, abilitie = $4, strength = $5, agility = $6, constitution = $7, level = $8, vitality = $9 WHERE id = $10', [name, universe, alignment, abilitie, strength, agility, constitution, level, vitality, id]);
+            res.send({ mensagem: "Warrior atualizado com sucesso" });
+        }
+    } catch (error) {
+        console.error("Erro ao tentar atualizar warrior", error);
+        res.status(500).send({ mensagem: "Erro ao tentar atualizar warrior" });
+    }
+});
+
 
 //rota get battle
 app.get('/battle', async (req, res) => {
