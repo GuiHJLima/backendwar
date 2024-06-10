@@ -3,6 +3,11 @@ const { Pool } = require('pg');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 const port = 4000;
 
@@ -14,7 +19,7 @@ const pool = new Pool({
     host: 'localhost',
     database: 'limaaulabacktds2',
     password: 'ds564',
-    port: 7007,
+    port: 5432,
 });
 
 //função para verificar a alingment
@@ -130,6 +135,7 @@ async function batalha(warrior1, warrior2) {
 app.get('/warriors', async (req, res) => {
     try {
         const resultado = await pool.query('SELECT * FROM warriors');
+        console.log(resultado);
         res.json({
             total: resultado.rowCount,
             warriors: resultado.rows
@@ -153,7 +159,7 @@ app.get('/warriors/:id', async (req, res) => {
 });
 
 //rotas get warrior by name
-app.get('/warriors/name/:name', async (req, res) => {
+app.get('/warriors/:name', async (req, res) => {
     const { name } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE name = $1', [name]);
@@ -168,7 +174,7 @@ app.get('/warriors/name/:name', async (req, res) => {
 });
 
 //rota get warrior by universe
-app.get('/warriors/universe/:universe', async (req, res) => {
+app.get('/warriors/:universe', async (req, res) => {
     const { universe } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE universe = $1', [universe]);
@@ -183,7 +189,7 @@ app.get('/warriors/universe/:universe', async (req, res) => {
 });
 
 //rota get warrior by alignment
-app.get('/warriors/alignment/:alignment', async (req, res) => {
+app.get('/warriors/:alignment', async (req, res) => {
     const { alignment } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE alignment = $1', [alignment]);
@@ -198,7 +204,7 @@ app.get('/warriors/alignment/:alignment', async (req, res) => {
 });
 
 //rota get warrior by strength
-app.get('/warriors/strength/:strength', async (req, res) => {
+app.get('/warriors/:strength', async (req, res) => {
     const { strength } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE strength = $1', [strength]);
@@ -213,7 +219,7 @@ app.get('/warriors/strength/:strength', async (req, res) => {
 });
 
 //rota get warrior by agility
-app.get('/warriors/agility/:agility', async (req, res) => {
+app.get('/warriors/:agility', async (req, res) => {
     const { agility } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE agility = $1', [agility]);
@@ -228,7 +234,7 @@ app.get('/warriors/agility/:agility', async (req, res) => {
 });
 
 //rota get warrior by constitution
-app.get('/warriors/constitution/:constitution', async (req, res) => {
+app.get('/warriors/:constitution', async (req, res) => {
     const { constitution } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE constitution = $1', [constitution]);
@@ -243,7 +249,7 @@ app.get('/warriors/constitution/:constitution', async (req, res) => {
 });
 
 //rota get warrior by level
-app.get('/warriors/level/:level', async (req, res) => {
+app.get('/warriors/:level', async (req, res) => {
     const { level } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE level = $1', [level]);
@@ -258,7 +264,7 @@ app.get('/warriors/level/:level', async (req, res) => {
 });
 
 //rota get warrior by vitality
-app.get('/warriors/vitality/:vitality', async (req, res) => {
+app.get('/warriors/:vitality', async (req, res) => {
     const { vitality } = req.params;
     try {
         const resultado = await pool.query('SELECT * FROM warriors WHERE vitality = $1', [vitality]);
